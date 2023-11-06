@@ -5,7 +5,7 @@ const sendOtp = (to, message) => {
   return new Promise((resolve, reject) => {
     const accountSid = process.env.TWILIO_ACCOUNT_SID;
     const authToken = process.env.TWILIO_AUTH_TOKEN;
-    const twilioPhoneNumber = "07061509178";
+    const twilioPhoneNumber = "+13343263368";
 
     const twilio = require("twilio")(accountSid, authToken);
 

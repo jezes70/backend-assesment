@@ -32,17 +32,17 @@ const createUser = async (req, res) => {
     }
     const status = false;
 
-    //     const otp_ = generateOtp();
-    //     const html = `
-    // <div style="max-width:700px; font-size:110%; border:10px solid #ddd;
-    // padding:50px 20px; margin:auto; ">
-    // <h2 style="text-transform:uppercase; text-align:center; color:teal;">
-    //   Welcome to E-AID
-    // </h2>
-    // <p>Hi there, your OTP is ${otp_.otp}, and it will expire in 30 minutes.</p>
-    // </div>
-    // `;
-    const otp = generateOtp();
+        const otp_ = generateOtp();
+        const html = `
+    <div style="max-width:700px; font-size:110%; border:10px solid #ddd;
+    padding:50px 20px; margin:auto; ">
+    <h2 style="text-transform:uppercase; text-align:center; color:teal;">
+      Welcome to E-AID
+    </h2>
+    <p>Hi there, your OTP is ${otp_.otp}, and it will expire in 30 minutes.</p>
+    </div>
+    `;
+  
     console.log(otp);
     const newUser = new User({
       email,

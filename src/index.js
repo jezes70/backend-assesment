@@ -4,6 +4,7 @@ const bodyParser = require("body-parser");
 const dotenv = require("dotenv");
 const connectToMongo = require("./config/config");
 const authRoutesConnection = require("./routes/authRoutesConnection");
+const cors = require("cors");
 
 const app = express();
 connectToMongo()
@@ -11,6 +12,13 @@ connectToMongo()
   .catch((err) => {
     console.log("Error connecting to database:", err.message);
   });
+
+app.use(
+  cors({
+    origin: "*",
+    methods: ["GET", "POST", "PUT", "DELETE"],
+  })
+);
 
 app.use(bodyParser.json());
 app.use(express.json());

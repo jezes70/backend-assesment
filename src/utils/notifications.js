@@ -32,7 +32,7 @@ const sendRegOTP = async (email, otp) => {
         <h2 style="text-transform:uppercase; text-align:center; color:teal;">
           Welcome to E-AID
         </h2>
-        <p>Hi there, your OTP is ${otp}, and it will expire in 30 minutes.</p>
+        <p>Hi there, your OTP is ${otp.otp}, and it will expire in 30 minutes.</p>
         </div>
       `,
     };
@@ -115,7 +115,6 @@ const validateToken = async (user, token) => {
 const generateResetPasswordLink = async (user, req) => {
   const payload = {
     id: user._id,
-
   };
 
   try {
