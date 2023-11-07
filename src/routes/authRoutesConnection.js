@@ -7,7 +7,8 @@ const forgotPasswordController = require("../controller/forgotPasswordController
 const authenticateUser = require("../middlewares/auth");
 
 router.post("/register", registerController.createUser);
-router.post("/resend", registerController.resendOtp);
+router.get("/resend/:email", registerController.resendOtp);
+router.get("/view-users/:id", authenticateUser, registerController.getUser);
 router.post("/upload-pic", authenticateUser, profileController.uploadPicture);
 router.put("/update/:id", authenticateUser, profileController.updateSettings);
 
@@ -18,6 +19,7 @@ router.post(
   "/forgotPassword",
   forgotPasswordController.forgotPasswordController
 );
+router.post("/change-password", forgotPasswordController.changePassword);
 router.get("/all", registerController.getAll);
 router.get("/confirm-link", forgotPasswordController.confirm);
 

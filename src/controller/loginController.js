@@ -17,26 +17,32 @@ const Login = async (req, res) => {
 
     let user = await User.findOne({ email });
 
-    if (user.status) {
-      const validUser = await bcrypt.compare(password, user.password);
+    if (user) {
+      if (user.status) {
+        const validUser = await bcrypt.compare(password, user.password);
 
-      if (validUser) {
-        const token = await generateToken(user);
-        res.cookie("token", token, {
-          httpOnly: true,
-          maxAge: 30 * 60 * 60 * 1000,
-        });
-        return res.status(200).json({ token: token, user: user });
+        if (validUser) {
+          const token = await generateToken(user);
+          res.cookie("token", token, {
+            httpOnly: true,
+            maxAge: 30 * 60 * 60 * 1000,
+          });
+          return res.status(200).json({ token: token, user: user });
+        } else {
+          return res
+            .status(400)
+            .json({ error: "Invalid email/phone number or password" });
+        }
       } else {
+        res.status(404).json({
+          error: "Invalid email Or Unauthorized User",
+        });
       }
-      return res
-        .status(400)
-        .json({ error: "Invalid email/phone number or password" });
+    } else {
+      res.status(404).json({
+        error: "User Not Found",
+      });
     }
-
-    res.status(404).json({
-      error: "Invalid email/phone number or password",
-    });
   } catch (err) {
     console.log(err);
     res.status(500).json({ Error: "Internal server error" });

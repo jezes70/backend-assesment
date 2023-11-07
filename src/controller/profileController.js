@@ -56,7 +56,7 @@ const uploadPicture = async (req, res) => {
 
 const updateSettings = async (req, res) => {
   try {
-    const { newPassword, email, phone } = req.body;
+    const { password, email, phone, interests } = req.body;
     const id = req.params.id;
     console.log(id);
 
@@ -67,12 +67,13 @@ const updateSettings = async (req, res) => {
     } else {
       const salt = await bcrypt.genSalt(12);
 
-      const hashedPassword = await bcrypt.hash(newPassword, salt);
+      const hashedPassword = await bcrypt.hash(password, salt);
       console.log(hashedPassword);
       console.log(user);
       user.password = hashedPassword;
       user.email = email;
       user.phone = phone;
+      user.interests = interests;
       await user.save();
       console.log("save");
       return res.status(200).json({ Success: "Password changed successfully" });

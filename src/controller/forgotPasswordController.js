@@ -27,7 +27,7 @@ const forgotPasswordController = async (req, res) => {
       .json({ message: "link sent successfully", link: resetToken });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: "Password reset email sending failed" });
+    res.status(500).json({ message: error.message });
   }
 };
 

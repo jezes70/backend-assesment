@@ -40,7 +40,7 @@ const sendRegOTP = async (email, otp) => {
     await transporter.sendMail(mailOptions);
   } catch (error) {
     console.error(error);
-    throw new Error("Error sending account verification OTP");
+    // throw new Error("Error sending account verification OTP");
   }
 };
 
@@ -74,7 +74,7 @@ const sendPasswordResetOTP = async (email, otp) => {
     await transporter.sendMail(mailOptions);
   } catch (error) {
     console.error(error);
-    throw Error("Error sending password reset OTP");
+    // throw Error("Error sending password reset OTP");
   }
 };
 
@@ -116,11 +116,12 @@ const generateResetPasswordLink = async (user, req) => {
   const payload = {
     id: user._id,
   };
+  const token = jwt.sign(payload, jwtSecret, {
+    expiresIn: "5min",
+  });
 
+  const link = `http://${req.hostname}:5173/confirm-link?token=${token}`;
   try {
-    const token = jwt.sign(payload, jwtSecret, {
-      expiresIn: "5min",
-    });
     const transporter = nodemailer.createTransport({
       host: process.env.smtp_host,
       port: 587,
@@ -129,7 +130,7 @@ const generateResetPasswordLink = async (user, req) => {
         pass: process.env.sendinblue_pass,
       },
     });
-    const link = `http://${req.hostname}:8080/api/v1/confirm-link?token=${token}`;
+
     console.log(link);
 
     const mailOptions = {
@@ -146,13 +147,12 @@ const generateResetPasswordLink = async (user, req) => {
           </div>
         `,
     };
-
     await transporter.sendMail(mailOptions);
 
     return link;
   } catch (error) {
     console.error(error);
-    throw new Error("Error generating password reset token");
+    return link;
   }
 };
 

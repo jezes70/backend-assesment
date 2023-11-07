@@ -35,7 +35,7 @@ const variables = {
 
 const isOtpValid = (user, providedOtp) => {
   if (!user.otp_expiry) {
-    return false; // OTP has expired
+    return false;
   }
   const currentTimestamp = new Date();
   return user.otp === providedOtp && currentTimestamp <= user.otp_expiry;

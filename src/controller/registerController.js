@@ -28,21 +28,13 @@ const createUser = async (req, res) => {
     if (findOneUser) {
       return res.status(400).json({
         error: "Email already exists",
+        status: findOneUser.status,
       });
     }
     const status = false;
 
-        const otp_ = generateOtp();
-        const html = `
-    <div style="max-width:700px; font-size:110%; border:10px solid #ddd;
-    padding:50px 20px; margin:auto; ">
-    <h2 style="text-transform:uppercase; text-align:center; color:teal;">
-      Welcome to E-AID
-    </h2>
-    <p>Hi there, your OTP is ${otp_.otp}, and it will expire in 30 minutes.</p>
-    </div>
-    `;
-  
+    const otp = generateOtp();
+
     console.log(otp);
     const newUser = new User({
       email,
@@ -54,7 +46,7 @@ const createUser = async (req, res) => {
       otp_expiry: otp.expiry,
     });
     await newUser.save();
-    await sendRegOTP(email, otp);
+    await otpSend(otp, phone, email, res);
 
     res.status(201).json({
       message: "User created successfully",
@@ -69,23 +61,71 @@ const createUser = async (req, res) => {
 
 const resendOtp = async (req, res) => {
   try {
-    const { email } = req.body;
+    const email = req.params.email;
     const otp = generateOtp();
-    await sendRegOTP(email, otp);
-    return res.status(200).json({
-      msg: "OTP have been sent to your mail",
-    });
+    const user = await User.findOne({ email });
+    if (user) {
+      user.otp = otp.otp;
+      user.otp_expiry = otp.expiry;
+      await user.save();
+      // await otpSend(otp, user.phone, email, res);
+      console.log(otp);
+      return res.status(200).json({
+        otp: otp,
+        message: "OTP sent successfully",
+      });
+    } else {
+      return res.status(400).json({
+        msg: "Not found",
+      });
+    }
   } catch (e) {
     return res.status(500).json({
       error: e.message,
     });
   }
 };
+
+const otpSend = async (otp, to, email, res) => {
+  const html = `
+    <div style="max-width:700px; font-size:110%; border:10px solid #ddd;
+    padding:50px 20px; margin:auto; ">
+    <h2 style="text-transform:uppercase; text-align:center; color:teal;">
+      Welcome to E-AID
+    </h2>
+    <p>Hi there, your OTP is ${otp.otp}, and it will expire in 30 minutes.</p>
+    </div>
+    `;
+
+  // sendOtp(to, html, res);
+  await sendRegOTP(email, otp);
+};
 const getAll = async (req, res) => {
   const users = await User.find({});
   return res.status(200).json({
     msg: users,
   });
+};
+
+const getUser = async (req, res) => {
+  const id = req.params.id;
+
+  try {
+    const users = await User.findOne({ _id: id });
+    if (!users) {
+      return res.status(400).json({
+        msg: "User not found",
+      });
+    } else {
+      return res.status(200).json({
+        msg: users,
+      });
+    }
+  } catch (e) {
+    return res.status(400).json({
+      msg: e.message,
+    });
+  }
 };
 
 const verifyUser = async (req, res) => {
@@ -119,4 +159,4 @@ const verifyUser = async (req, res) => {
   }
 };
 
-module.exports = { createUser, getAll, verifyUser, resendOtp };
+module.exports = { createUser, getAll, verifyUser, resendOtp, getUser };
